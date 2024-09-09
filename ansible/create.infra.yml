@@ -23,7 +23,7 @@
           #!/bin/bash
           apt update
           apt install -y ansible
-          sudo wget https://raw.githubusercontent.com/Bar-Tubul/Ansible_automa>          ansible-playbook /home/ubuntu/playbook.yml
+          sudo wget https://raw.githubusercontent.com/Bar-Tubul/Ansible_automation/main/playbook.yml -O /home/ubuntu/playbook.yml
         count: 1
         name: "{{ item.name }}"
       loop:
