@@ -1,34 +1,36 @@
 pipeline {
     agent any
-    
+
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the source code from the repository
-                checkout scm
+                // Checkout the latest code from the GitHub repository
+                git url: 'https://github.com/Bar-Tubul/Ansible-CI-CD-FWS.git', branch: 'main'
             }
         }
+
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image
+                    // Build the Docker image with a tag
                     sh 'docker build -t myapp .'
                 }
             }
         }
-        stage('Deploy') {
+
+        stage('Deploy Docker Container') {
             steps {
                 script {
-                    // Use Docker Compose to start the container
+                    // Start or restart the Docker container
                     sh 'docker-compose up -d'
                 }
             }
         }
     }
-    
+
     post {
         always {
-            // Clean up Docker containers and images if needed
+            // Clean up any resources, if necessary
             sh 'docker-compose down'
         }
     }
