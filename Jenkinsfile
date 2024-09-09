@@ -4,6 +4,8 @@ pipeline {
     environment {
         REPO_URL = 'https://github.com/Bar-Tubul/Ansible-CI-CD-FWS.git'
         REPO_BRANCH = 'main'
+        IMAGE_NAME = 'myapp'
+        CONTAINER_NAME = 'nginx-app'
     }
 
     stages {
@@ -17,10 +19,9 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Ensure the Dockerfile and docker-compose.yml are in the 'src' directory
+                    // Build Docker image
                     dir('src') {
-                        // Build Docker image
-                        sh 'docker build -t myapp .'
+                        sh 'docker build -t ${IMAGE_NAME} .'
                     }
                 }
             }
@@ -29,26 +30,36 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Ensure docker-compose.yml is in the 'src' directory
-                    dir('src') {
-                        // Start Docker container
-                        sh 'docker-compose up -d'
-                    }
+                    // Stop and remove the old container
+                    sh '''
+                    if [ $(docker ps -q -f name=${CONTAINER_NAME}) ]; then
+                        docker stop ${CONTAINER_NAME}
+                        docker rm ${CONTAINER_NAME}
+                    fi
+                    '''
+                    
+                    // Run the new container
+                    sh 'docker run -d --name ${CONTAINER_NAME} -p 80:80 ${IMAGE_NAME}'
                 }
             }
         }
     }
-
+    
     post {
         always {
+            // Cleanup
             script {
-                // Ensure docker-compose.yml is in the 'src' directory
-                dir('src') {
-                    // Stop and remove Docker container
-                    sh 'docker-compose down'
-                }
+                // Ensure Docker containers are stopped and cleaned up if something goes wrong
+                sh '''
+                if [ $(docker ps -q -f name=${CONTAINER_NAME}) ]; then
+                    docker stop ${CONTAINER_NAME}
+                    docker rm ${CONTAINER_NAME}
+                fi
+                '''
             }
         }
     }
 }
+
+
 
