@@ -21,8 +21,9 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build Docker image with no cache to ensure latest changes
-                    dir('src') {  // Assuming Dockerfile and context are in 'src' directory
+                    // Change directory to 'src' where Dockerfile and index.html are located
+                    dir('src') {
+                        // Build Docker image with no cache to ensure latest changes
                         sh 'docker build --no-cache -t ${IMAGE_NAME} .'
                     }
                 }
@@ -61,6 +62,7 @@ pipeline {
         }
     }
 }
+
 
                      
 
