@@ -1,0 +1,24 @@
+---
+- name: "Terminate EC2 Instances"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  tasks:
+    - name: List all EC2 instances
+      amazon.aws.ec2_instance_info:
+        aws_access_key: <insert access key>
+        aws_secret_key: <insert secret key>
+        region: us-east-1
+      register: ec2_info
+
+    - name: Terminate EC2 instances
+      amazon.aws.ec2_instance:
+        aws_access_key: <insert access key>
+        aws_secret_key: <insert secret key>
+        region: us-east-1
+        instance_ids: "{{ ec2_info.instances | selectattr('tags.Name', 'equalto', 'bar-jenkins-1') | map(attribute='instance_id') | list }}"
+        state: absent
+      when: ec2_info.instances | selectattr('tags.Name', 'equalto', 'bar-jenkins-1') | length > 0
