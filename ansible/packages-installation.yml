@@ -12,7 +12,7 @@
 
     - name: Install docker-compose
       get_url:
-        url: https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64
+        url : https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64
         dest: /usr/local/bin/docker-compose
         mode: '755'
 
@@ -34,48 +34,27 @@
     - name: Install pip3
       command: apt install -y python3-pip
 
-    - name: Install Boto3
-      pip:
-        name: boto3
-        executable: pip3
+    - name: Install Boto3 via apt (Avoiding pip error)
+      command: apt install -y python3-boto3
 
-    - name: Install fontconfig and OpenJDK 17
-      apt:
-        name: "{{ item }}"
-        state: present
-      loop:
-        - fontconfig
-        - openjdk-17-jre
-
-    - name: Verify Java version
-      command: java -version
-      register: java_version_output
-      ignore_errors: yes
-
-    - name: Display Java version
-      debug:
-        var: java_version_output.stdout
-
-    - name: Install Jenkins (import key)
-      apt_key:
-        url: https://pkg.jenkins.io/debian/jenkins.io.key
-        state: present
-
-    - name: Add Jenkins repository
-      apt_repository:
-        repo: 'deb http://pkg.jenkins.io/debian-stable binary/'
-        state: present
+    - name: Install OpenJDK 17
+      command: apt install -y fontconfig openjdk-17-jre
 
     - name: Install Jenkins
-      apt:
-        name: jenkins
-        state: present
-        update_cache: yes
+      shell: |
+        wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo tee \
+        /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+        sudo sh -c 'echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+        https://pkg.jenkins.io/debian-stable binary/ > \
+        /etc/apt/sources.list.d/jenkins.list'
+        sudo apt-get update
+        sudo apt-get install -y jenkins
 
     - name: Start Jenkins service
       service:
         name: jenkins
         state: started
-        enabled: yes
+        enabled: true
+
 
 
