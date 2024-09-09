@@ -13,7 +13,7 @@ pipeline {
             steps {
                 // Clone the repository
                 git url: "${REPO_URL}", branch: "${REPO_BRANCH}"
-                // List files to verify checkout
+                // Optionally, list files to verify checkout
                 sh 'ls -l'
             }
         }
@@ -22,7 +22,7 @@ pipeline {
             steps {
                 script {
                     // Build Docker image with no cache to ensure latest changes
-                    dir('src') {
+                    dir('src') {  // Assuming Dockerfile and context are in 'src' directory
                         sh 'docker build --no-cache -t ${IMAGE_NAME} .'
                     }
                 }
@@ -36,6 +36,32 @@ pipeline {
                     sh '''
                     if [ $(docker ps -q -f name=${CONTAINER_NAME}) ]; then
                         docker stop ${CONTAINER_NAME}
+                        docker rm ${CONTAINER_NAME}
+                    fi
+                    '''
+                    
+                    // Run the new container
+                    sh 'docker run -d --name ${CONTAINER_NAME} -p 80:80 ${IMAGE_NAME}'
+                }
+            }
+        }
+    }
+    
+    post {
+        failure {
+            // Cleanup if something goes wrong
+            script {
+                sh '''
+                if [ $(docker ps -q -f name=${CONTAINER_NAME}) ]; then
+                    docker stop ${CONTAINER_NAME}
+                    docker rm ${CONTAINER_NAME}
+                fi
+                '''
+            }
+        }
+    }
+}
+
                      
 
 
