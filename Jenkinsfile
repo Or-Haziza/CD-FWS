@@ -46,8 +46,8 @@ pipeline {
     }
     
     post {
-        always {
-            // Cleanup the old container in case something goes wrong
+        failure {
+            // Cleanup if something goes wrong
             script {
                 sh '''
                 if [ $(docker ps -q -f name=${CONTAINER_NAME}) ]; then
@@ -59,6 +59,7 @@ pipeline {
         }
     }
 }
+
 
 
 
