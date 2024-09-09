@@ -27,6 +27,6 @@
           ansible-playbook /home/ubuntu/packages-installation.yml
         count: 1 #Change to the amount of Instances you would like to create
         name: "{{ item.name }}"
-      loop: #Duplicate the following line to the amount of the "count" above to name all Instances
+      loop: #Duplicate the following line to the amount of the "count" above, to name all Instances with a unique name tag 
         - { name: "bar-jenkins-1" }
       register: ec2
