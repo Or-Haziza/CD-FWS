@@ -30,7 +30,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Stop and remove the old container
+                    // Stop and remove the old container if it exists
                     sh '''
                     if [ $(docker ps -q -f name=${CONTAINER_NAME}) ]; then
                         docker stop ${CONTAINER_NAME}
@@ -47,9 +47,8 @@ pipeline {
     
     post {
         always {
-            // Cleanup
+            // Cleanup the old container in case something goes wrong
             script {
-                // Ensure Docker containers are stopped and cleaned up if something goes wrong
                 sh '''
                 if [ $(docker ps -q -f name=${CONTAINER_NAME}) ]; then
                     docker stop ${CONTAINER_NAME}
@@ -60,6 +59,7 @@ pipeline {
         }
     }
 }
+
 
 
 
