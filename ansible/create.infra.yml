@@ -9,12 +9,12 @@
     - name: Launch EC2 instance
       amazon.aws.ec2_instance:
         aws_access_key: <insert access key>
-        aws_secret_key: <insery sercret key>
+        aws_secret_key: <insert sercret key>
         region: us-east-1
-        key_name: Bar-Keypair-New
-        instance_type: t2.medium
+        key_name: <Insert name of key pair>
+        instance_type: <enter instance type>
         image_id: ami-0e86e20dae9224db8
-        security_groups:  # Updated to accept a list of security groups
+        security_groups:  
           - sg-077a4a27e9b9e80a2
         subnet_id: subnet-04fd6d8b7687e3c02
         tags:
