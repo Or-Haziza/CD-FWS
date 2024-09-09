@@ -1,28 +1,39 @@
 pipeline {
     agent any
 
+    environment {
+        REPO_URL = 'https://github.com/Bar-Tubul/Ansible-CI-CD-FWS.git'
+        REPO_BRANCH = 'main'
+    }
+
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the latest code from the GitHub repository
-                git url: 'https://github.com/Bar-Tubul/Ansible-CI-CD-FWS.git', branch: 'main'
+                // Clone the repository
+                git url: "${REPO_URL}", branch: "${REPO_BRANCH}"
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image with a tag
-                    sh 'docker build -t myapp .'
+                    // Ensure the Dockerfile and docker-compose.yml are in the 'src' directory
+                    dir('src') {
+                        // Build Docker image
+                        sh 'docker build -t myapp .'
+                    }
                 }
             }
         }
 
-        stage('Deploy Docker Container') {
+        stage('Deploy') {
             steps {
                 script {
-                    // Start or restart the Docker container
-                    sh 'docker-compose up -d'
+                    // Ensure docker-compose.yml is in the 'src' directory
+                    dir('src') {
+                        // Start Docker container
+                        sh 'docker-compose up -d'
+                    }
                 }
             }
         }
@@ -30,8 +41,14 @@ pipeline {
 
     post {
         always {
-            // Clean up any resources, if necessary
-            sh 'docker-compose down'
+            script {
+                // Ensure docker-compose.yml is in the 'src' directory
+                dir('src') {
+                    // Stop and remove Docker container
+                    sh 'docker-compose down'
+                }
+            }
         }
     }
 }
+
