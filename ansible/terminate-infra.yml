@@ -6,19 +6,27 @@
   become: yes
   vars:
     ansible_python_interpreter: /usr/bin/python3
+    aws_access_key: "<insert access key>"
+    aws_secret_key: "<insert secret key>"
+    region: "us-east-1"
+    instance_name_tags:
+      - "bar-jenkins-1"
+      - "another-instance-name"  # Add more instance names here
+
   tasks:
     - name: List all EC2 instances
       amazon.aws.ec2_instance_info:
-        aws_access_key: <insert access key>
-        aws_secret_key: <insert secret key>
-        region: us-east-1
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        region: "{{ region }}"
       register: ec2_info
 
-    - name: Terminate EC2 instances
+    - name: Terminate EC2 instances based on Name tags
       amazon.aws.ec2_instance:
-        aws_access_key: <insert access key>
-        aws_secret_key: <insert secret key>
-        region: us-east-1
-        instance_ids: "{{ ec2_info.instances | selectattr('tags.Name', 'equalto', 'bar-jenkins-1') | map(attribute='instance_id') | list }}"
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        region: "{{ region }}"
+        instance_ids: "{{ ec2_info.instances | selectattr('tags.Name', 'in', instance_name_tags) | map(attribute='instance_id') | list }}"
         state: absent
-      when: ec2_info.instances | selectattr('tags.Name', 'equalto', 'bar-jenkins-1') | length > 0
+      when: ec2_info.instances | selectattr('tags.Name', 'in', instance_name_tags) | length > 0
+
