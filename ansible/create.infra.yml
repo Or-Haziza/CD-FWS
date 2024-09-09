@@ -11,12 +11,12 @@
         aws_access_key: <insert access key>
         aws_secret_key: <insert sercret key>
         region: us-east-1
-        key_name: <Insert name of key pair>
-        instance_type: <enter instance type>
+        key_name: <Insert name of key pair> #Recommended to use the same KeyPair that was used to create the Initial Instance
+        instance_type: <Insert instance type>
         image_id: ami-0e86e20dae9224db8
         security_groups:  
-          - sg-077a4a27e9b9e80a2
-        subnet_id: subnet-04fd6d8b7687e3c02
+          - <Insert Security Group Id>
+        subnet_id: <Enter subnet id>
         tags:
           Name: "{{ item.name }}"
         user_data: |
@@ -25,8 +25,8 @@
           apt install -y ansible
           sudo wget https://raw.githubusercontent.com/Bar-Tubul/CD-FWS/main/ansible/packages-installation.yml -O /home/ubuntu/packages-installation.yml
           ansible-playbook /home/ubuntu/packages-installation.yml
-        count: 1
+        count: 1 #Change to the amount of Instances you would like to create
         name: "{{ item.name }}"
-      loop:
+      loop: #Duplicate the following line to the amount of the "count" above to name all Instances
         - { name: "bar-jenkins-1" }
       register: ec2
