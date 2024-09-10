@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        REPO_URL = 'https://github.com/Bar-Tubul/Ansible-CI-CD-FWS.git'
+        REPO_URL = 'https://github.com/Bar-Tubul/CD-FWS.git'
         REPO_BRANCH = 'main'
         IMAGE_NAME = 'myapp'
         CONTAINER_NAME = 'nginx-app'
