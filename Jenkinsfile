@@ -18,13 +18,7 @@ pipeline {
                 sh 'ls -l'
             }
         }
-        stage('delete imsages'){
-            steps{
-                script{
-                    sh 'docker image prune -a -f'
-                }
-            }
-        }
+       
         stage('Build Docker Image') {
             steps {
                 script {
@@ -51,6 +45,13 @@ pipeline {
                     
                     // Run the new container
                     sh 'docker run -d --name ${CONTAINER_NAME} -p 80:80 ${IMAGE_NAME}'
+                }
+            }
+        }
+         stage('delete imsages'){
+            steps{
+                script{
+                    sh 'docker image prune -a -f'
                 }
             }
         }
