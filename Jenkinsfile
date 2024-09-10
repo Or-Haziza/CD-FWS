@@ -18,7 +18,7 @@ pipeline {
                 sh 'ls -l'
             }
         }
-        stage(delete imsages){
+        stage('delete imsages'){
             steps{
                 script{
                     sh 'docker image prune -a -f'
