@@ -1,4 +1,4 @@
-# Project Setup and Deployment Guide
+# Project Setup and Deployment Guide (AWS EC2 Instances)
 
 ## Overview
 
