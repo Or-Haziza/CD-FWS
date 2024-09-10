@@ -7,6 +7,7 @@ pipeline {
         IMAGE_NAME = 'myapp'
         CONTAINER_NAME = 'nginx-app'
     }
+  
 
     stages {
         stage('Checkout') {
@@ -17,14 +18,20 @@ pipeline {
                 sh 'ls -l'
             }
         }
-
+        stage(delete imsages){
+            steps{
+                script{
+                    sh 'docker image prune -a -f'
+                }
+            }
+        }
         stage('Build Docker Image') {
             steps {
                 script {
                     // Change directory to 'src' where Dockerfile and index.html are located
                     dir('src') {
                         // Build Docker image with no cache to ensure latest changes and delete all images before creation 
-                        sh 'docker image prune -a -f'
+                        
                         sh 'docker build --no-cache -t ${IMAGE_NAME} .'
                     }
                 }
