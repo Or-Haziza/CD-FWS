@@ -23,7 +23,8 @@ pipeline {
                 script {
                     // Change directory to 'src' where Dockerfile and index.html are located
                     dir('src') {
-                        // Build Docker image with no cache to ensure latest changes
+                        // Build Docker image with no cache to ensure latest changes and delete all images before creation 
+                        sh 'docker image prune -a -f'
                         sh 'docker build --no-cache -t ${IMAGE_NAME} .'
                     }
                 }
